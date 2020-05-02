@@ -8,7 +8,6 @@ app.use(express.json());
 app.use(cors());
 
 const repositories = [];
-let like = 0;
 
 function validUuid(request, response, next) {
   const { id } = request.params;
@@ -23,7 +22,7 @@ function validUuid(request, response, next) {
 app.use('/repositories/:id', validUuid);
 
 app.get("/repositories", (request, response) => {
-  return response.status(200).json(repositories);
+  return response.json(repositories);
 });
 
 app.post("/repositories", (request, response) => {
@@ -31,14 +30,14 @@ app.post("/repositories", (request, response) => {
   
   const repository = {
     id: uuid(),
-    title: title,
-    url: url,
-    techs: [ techs ],
-    likes: like
+    title,
+    url,
+    techs,
+    likes: 0
   };
 
   repositories.push(repository);
-  return response.status(200).json(repository);
+  return response.json(repository);
 
 });
 
@@ -54,14 +53,15 @@ app.put("/repositories/:id", (request, response) => {
 
   const repository = {
     id: uuid(),
-    title: title,
-    url: url,
-    techs: [ techs ]
+    url,
+    title,
+    techs,
+    likes: 0
   };
 
   repositories[repositoryIndex] = repository;
 
-  return response.status(200).json(repository);
+  return response.json(repository);
 });
 
 app.delete("/repositories/:id", (request, response) => {
@@ -87,9 +87,9 @@ app.post("/repositories/:id/like", validUuid, (request, response) => {
     return response.status(400).json({ error: 'Repository not found.' }) 
   }
 
-  repositories[repositoryIndex].likes = like++;
+  repositories[repositoryIndex].likes += 1;
 
-  return response.status(200).json(repositories[repositoryIndex]);
+  return response.json(repositories[repositoryIndex]);
 });
 
 module.exports = app;
